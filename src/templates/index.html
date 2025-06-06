@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sentiment Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <h1>Sentiment Analysis AI</h1>
+    <h2>Enter a review:</h2>
+    <textarea id="text" rows="6" cols="60"></textarea><br><br>
+    <button onclick="analyzeReview()">Analyze</button>
+
+    <h3>Results:</h3>
+    <p>Positive: <span id="positiveScore">0.000</span></p>
+    <p>Neutral:  <span id="neutralScore">0.000</span></p>
+    <p>Negative: <span id="negativeScore">0.000</span></p>
+    <p><strong id="sentimentLabel"></strong></p>
+
+    <script>
+        async function analyzeReview() {
+            const text = document.getElementById('text').value;
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById('positiveScore').innerText = data.Positive.toFixed(3);
+                document.getElementById('neutralScore').innerText = data.Neutral.toFixed(3);
+                document.getElementById('negativeScore').innerText = data.Negative.toFixed(3);
+                document.getElementById('sentimentLabel').innerText = data.label;
+            } else {
+                alert(data.error || 'Error analyzing text');
+            }
+        }
+    </script>
+</body>
+</html>
